@@ -3,7 +3,7 @@
 The transition is where two things happen together:
   1. repeated-half loss drops sharply from the no-context baseline log(vocab_size)
      toward its final value, and
-  2. the best layer-1 head's induction score jumps from ~0 toward its final value.
+  2. the most induction-like head's score jumps from ~0 toward its final value.
 
 For each curve we lightly smooth it and report the first logged step at which it has
 covered 10%, 50% and 90% of the way from its starting level to its final level. The
@@ -72,9 +72,16 @@ def detect_transition(path: str | Path, cfg: Config, smooth_window: int = 5) -> 
     ind_end = float(m[best][-n_tail:].mean())
     ind_cross = _progress_steps(steps, ind, ind_start, ind_end)
 
-    found = (rep_start - rep_end) > 0.5 * rep_start and rep_cross["50pct"] is not None
+    # Both signals must move: the loss must fall by more than half, and the best head's
+    # induction score must rise by at least 0.3. A loss drop without an induction head
+    # means the model found some other (e.g. positional) solution.
+    loss_dropped = (rep_start - rep_end) > 0.5 * rep_start and rep_cross["50pct"] is not None
+    head_formed = (ind_end - ind_start) > 0.3 and ind_cross["50pct"] is not None
+    found = loss_dropped and head_formed
     return {
         "transition_found": bool(found),
+        "loss_dropped": bool(loss_dropped),
+        "induction_head_formed": bool(head_formed),
         "transition_step": rep_cross["50pct"] if found else None,
         "repeated_half_loss": {
             "start (log V)": round(rep_start, 4),
