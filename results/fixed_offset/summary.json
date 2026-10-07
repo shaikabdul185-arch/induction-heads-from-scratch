@@ -1,0 +1,64 @@
+{
+  "transition": {
+    "transition_found": true,
+    "loss_dropped": true,
+    "induction_head_formed": true,
+    "transition_step": 1280,
+    "repeated_half_loss": {
+      "start (log V)": 4.1589,
+      "final": 0.0136,
+      "crossing_steps": {
+        "10pct": 1040,
+        "50pct": 1280,
+        "90pct": 4140
+      },
+      "steepest_drop_step": 1230
+    },
+    "induction_score": {
+      "head": "L1H2",
+      "start": 0.0416,
+      "final": 0.6598,
+      "crossing_steps": {
+        "10pct": 1050,
+        "50pct": 1240,
+        "90pct": 3600
+      }
+    },
+    "first_half_loss_final": 4.1806,
+    "final_induction_scores": {
+      "L0H0": 0.0604,
+      "L0H1": 0.0628,
+      "L0H2": 0.0568,
+      "L0H3": 0.0656,
+      "L1H0": 0.6283,
+      "L1H1": 0.0541,
+      "L1H2": 0.6598,
+      "L1H3": 0.1923
+    }
+  },
+  "attention_before_step": 1000,
+  "attention_after_step": 15000,
+  "tl_max_abs_logit_diff": 0.0,
+  "length_generalization": [
+    {
+      "half_len": 8,
+      "repeated_half_loss": 4.1604,
+      "max_induction_score": 0.1372
+    },
+    {
+      "half_len": 16,
+      "repeated_half_loss": 4.1688,
+      "max_induction_score": 0.08
+    },
+    {
+      "half_len": 24,
+      "repeated_half_loss": 22.0139,
+      "max_induction_score": 0.0601
+    },
+    {
+      "half_len": 32,
+      "repeated_half_loss": 0.0061,
+      "max_induction_score": 0.66
+    }
+  ]
+}

@@ -88,11 +88,12 @@ def plot_losses(m: dict, cfg: Config, tr: dict, out: Path) -> None:
     fig, ax = plt.subplots(figsize=(8, 4.2))
     mark_transition(ax, tr)
     steps = m["step"]
-    ax.plot(steps[1:], m["train_loss"][1:], color=SERIES[0], alpha=0.35, lw=1.2)
+    ax.plot(steps[1:], m["train_loss"][1:], color=SERIES[0], alpha=0.35, lw=1.2,
+            label="training batch loss (random L)")
     curves = [
-        ("train loss (all positions)", m["eval_loss"], SERIES[0]),
-        ("first half (random tokens)", m["first_half_loss"], SERIES[1]),
-        ("repeated half (copyable)", m["repeated_half_loss"], SERIES[2]),
+        ("eval loss, all positions", m["eval_loss"], SERIES[0]),
+        ("eval loss, first half (random tokens)", m["first_half_loss"], SERIES[1]),
+        ("eval loss, repeated half (copyable)", m["repeated_half_loss"], SERIES[2]),
     ]
     for label, y, c in curves:
         ax.plot(steps, y, color=c, label=label)
