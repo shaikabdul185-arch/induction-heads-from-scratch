@@ -1,0 +1,33 @@
+# Ablation: identical to default.yaml except the repeat length is fixed at 32. Loaded by `python -m induction.train`.
+seed: 0
+
+# Data: L random tokens, then the same L tokens again.
+# Ablation: L is fixed, so the copy offset is always the same.
+vocab_size: 64
+min_half_len: 32
+max_half_len: 32
+
+# Model: 2-layer attention-only transformer (no MLPs)
+n_layers: 2
+d_model: 64
+n_heads: 4
+d_head: 16
+use_layernorm: false
+init_std: 0.02
+
+# Optimisation (AdamW)
+batch_size: 64
+n_steps: 4000
+lr: 0.001
+weight_decay: 0.0
+beta1: 0.9
+beta2: 0.99
+grad_clip: 1.0
+
+# Logging / checkpointing
+log_every: 10
+eval_batch_size: 256
+eval_seed: 12345
+eval_half_len: 32
+ckpt_every: 100
+out_dir: runs/fixed_offset

@@ -1,0 +1,7 @@
+torch>=2.2
+# HookedTransformer was removed from the top-level API in TransformerLens 4.0
+transformer_lens>=2.15,<4
+numpy
+matplotlib
+pyyaml
+pytest
