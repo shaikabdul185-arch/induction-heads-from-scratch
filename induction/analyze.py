@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import shutil
 from pathlib import Path
 
 import matplotlib
@@ -105,7 +106,7 @@ def plot_losses(m: dict, cfg: Config, tr: dict, out: Path) -> None:
     ax.set_ylabel("cross-entropy loss (nats)")
     ax.set_ylim(0, None)
     ax.set_title("Loss on the repeated half collapses at the transition", loc="left")
-    ax.legend(loc="center right")
+    ax.legend(loc="lower left")
     fig.savefig(out)
     plt.close(fig)
 
@@ -125,7 +126,7 @@ def plot_induction_scores(m: dict, cfg: Config, tr: dict, tl_scores: dict, out: 
     axes[0].set_ylim(0, 1)
     axes[-1].legend(loc="upper left", title="lines: training log\ndots: TransformerLens",
                     title_fontsize=8)
-    fig.suptitle("Induction score per head over training", x=0.06, ha="left", color=INK)
+    fig.suptitle("Induction score per head over training", x=0.06, y=1.03, ha="left", color=INK)
     fig.savefig(out)
     plt.close(fig)
 
@@ -153,8 +154,8 @@ def plot_attention(tl_model, tokens: torch.Tensor, cfg: Config, step: int, title
             if l == cfg.n_layers - 1:
                 ax.set_xlabel("source position")
             scores.append(ind[h].item())
-    fig.suptitle(f"{title} (step {step}): attention on a repeated sequence", x=0.02, ha="left",
-                 color=INK)
+    fig.suptitle(f"{title} (step {step}): attention on a repeated sequence, L = {L}", x=0.02,
+                 y=1.01, ha="left", color=INK)
     fig.savefig(out)
     plt.close(fig)
 
@@ -184,9 +185,13 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--run", default="runs/default")
     parser.add_argument("--figures", default="figures")
+    parser.add_argument("--results", default="results",
+                        help="small copies of the run's logs are saved to <results>/<run name>/")
     args = parser.parse_args()
     run, fig_dir = Path(args.run), Path(args.figures)
-    fig_dir.mkdir(exist_ok=True)
+    fig_dir.mkdir(parents=True, exist_ok=True)
+    res_dir = Path(args.results) / run.name
+    res_dir.mkdir(parents=True, exist_ok=True)
 
     cfg = Config.from_yaml(run / "config.yaml")
     m = load_metrics(run / "metrics.csv")
@@ -231,9 +236,11 @@ def main() -> None:
 
     summary = {"transition": tr, "attention_before_step": before, "attention_after_step": after,
                "tl_max_abs_logit_diff": max_diff, "length_generalization": gen}
-    with open(fig_dir / "summary.json", "w") as f:
+    for name in ("config.yaml", "metrics.csv"):
+        shutil.copy(run / name, res_dir / name)
+    with open(res_dir / "summary.json", "w") as f:
         json.dump(summary, f, indent=2)
-    print(f"wrote figures to {fig_dir}/ (before={before}, after={after})")
+    print(f"wrote figures to {fig_dir}/ and logs to {res_dir}/ (before={before}, after={after})")
 
 
 if __name__ == "__main__":
